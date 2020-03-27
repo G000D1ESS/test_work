@@ -5,7 +5,8 @@ class WildberriesSpider(scrapy.Spider):
 
     name = "wildberries_spider"
     uniq_id = 0
-        
+    
+    """ First stage """
     def start_requests(self):
 
         # Start Searching from Category
@@ -13,6 +14,7 @@ class WildberriesSpider(scrapy.Spider):
         
         yield scrapy.Request(url=url, callback=self.get_start_urls)
 
+    """ Fill stack Products from Main Pages """
     def get_start_urls(self, response):
 
         # Get Resonse List of Products From [Main table]
@@ -26,6 +28,7 @@ class WildberriesSpider(scrapy.Spider):
         # Parse Product Page
         yield from response.follow_all(products, callback=self.parse)
 
+    """ Return product Price data from response """
     def get_price_data(self, response):
 
         # Check to Sale
@@ -62,7 +65,8 @@ class WildberriesSpider(scrapy.Spider):
         }
         
         return price_data
-        
+    
+    """ Main parser """
     def parse(self, response):
 
         yield {
