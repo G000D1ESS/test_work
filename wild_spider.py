@@ -105,6 +105,7 @@ class WildberriesSpider(scrapy.Spider):
             main_page = set_image[0]
         else:
             main_page = ""
+            set_image = []
         
         return {
             "main_image": main_page, 
