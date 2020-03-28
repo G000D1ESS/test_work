@@ -117,13 +117,42 @@ class WildberriesSpider(scrapy.Spider):
     def get_metadata(self, response):
         
         # "metadata": {
-        #    "__description": # {str} Описание товар  ,
-        #    # ниже добавить ключи которые могут быть
-        #    # на странице такие как Артикул, Код товара, и  свойства если они есть
-        #    # 'АРТИКУЛ': 'A88834'    
+        #     "__description": # {str} Описание товар 
+        #     # ниже добавить ключи которые могут бытm
+        #     # на странице такие как Артикул, Код товара, и свойства если они есть
+        #     # 'АРТИКУЛ': 'A88834'
         # }
 
-        return {}
+        metadata = {}
+
+        #Артикул
+        article = response.css('div.article span.j-article::text').get()
+        if article is not None:
+            metadata['АРТИКУЛ'] = article
+
+        # Описание
+        description = response.css('div.description p::text').get()
+        if description is not None:
+            description = description.strip()
+            metadata['__description'] = description
+
+        # Свойства
+        params = {}
+        for param in response.css('div.params div.pp'):
+            row = param.css('span').getall()
+            if (row is not None) and (len(row)>=2):
+                key = param.css('span b::text').get()
+                value = param.css('span::text').get()
+                params[key] = value
+        if (len(params)>0):
+            metadata['params'] = params
+
+        # Состав
+        structure = response.css("div.i-composition-v1 span::text").get()
+        if structure is not None:
+            metadata['Состав'] = structure
+            
+        return metadata
 
     """ Main parser """
     def parse(self, response):
